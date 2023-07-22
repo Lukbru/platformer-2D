@@ -1,0 +1,16 @@
+level_map = [
+ '                            ',
+ '                            ',
+ '     P                      ',
+ ' XX  XXX              XX    ',
+ '  X               XX        ',
+ '  XX         XXX            ',
+ '      XXX                   ',
+ '            XX           X  ',
+ '     XXXX  XXXX        XXX  ',
+ ' XX   XXX  XXXXX  XX  XXXXX ',
+ ' XXXXXXXX  XXXXX  XX  XXXXX ']
+
+tile_size = 64
+screen_width = 1800
+screen_height = len(level_map) * tile_size
