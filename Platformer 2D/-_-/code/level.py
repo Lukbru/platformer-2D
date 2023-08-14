@@ -2,7 +2,7 @@ import pygame
 from tiles import Tile
 from Settings import tile_size ,screen_width ,screen_height
 from player import Player
-
+from particle import particle_effect
 class Level:
     def __init__(self,level_data,surface):
 
@@ -11,6 +11,31 @@ class Level:
         self.world_shift = 0 # przesuwanie-level
         self.touching_wall_x = 0
 
+        self.dust_sprite = pygame.sprite.GroupSingle()
+        self.player_to_ground = False
+
+    def create_jump_particle(self,pos):
+        if self.player.sprite.facing_right:
+            pos -= pygame.math.Vector2(1,5)
+        else:
+            pos += pygame.math.Vector2(1,-5)
+        jump_particle_sprite = particle_effect(pos,'jump')
+        self.dust_sprite.add(jump_particle_sprite)
+
+    def player_on_ground(self):
+        if self.player.sprite.on_ground:
+            self.player_to_ground = True
+        else:
+            self.player_to_ground = False
+
+    def create_land_particle(self):
+        if not self.player_to_ground and self.player.sprite.on_ground and not self.dust_sprite.sprites():
+            if self.player.sprite.facing_right:
+                offset = pygame.math.Vector2(20, 15)
+            else:
+                offset = pygame.math.Vector2(-20, 15)
+            fall_partice = particle_effect(self.player.sprite.rect.midbottom - offset,'land')
+            self.dust_sprite.add(fall_partice)
     def setup_level(self,layout): # tworzenie-level
         self.tiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
@@ -25,7 +50,7 @@ class Level:
                     tile = Tile((x,y),tile_size)
                     self.tiles.add(tile)
                 if cell == 'P':
-                    player_sprite = Player((x,y))
+                    player_sprite = Player((x,y),self.display_surface,self.create_jump_particle)
                     self.player.add(player_sprite)
 
     def scroll_x(self):
@@ -83,11 +108,17 @@ class Level:
             player.on_ceiling = False
 
     def run(self):
+
+        self.dust_sprite.update(self.world_shift)  # particle
+        self.dust_sprite.draw(self.display_surface)
+
         self.tiles.update(self.world_shift) # bloki
         self.tiles.draw(self.display_surface)
         self.scroll_x()
 
-        self.player.update()
+        self.player.update()  # gracz
         self.horisontal_movement_collision()
+        self.player_on_ground()
         self.vertical_movement_collision()
-        self.player.draw(self.display_surface) # gracz
+        self.create_land_particle()
+        self.player.draw(self.display_surface)
