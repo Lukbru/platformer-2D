@@ -1,5 +1,5 @@
 import pygame
-from tiles import Tile
+from tiles import Tile ,DissapearBlock ,MovingBlock
 from Settings import tile_size ,screen_width ,screen_height
 from player import Player
 from particle import particle_effect
@@ -52,6 +52,9 @@ class Level:
                 if cell == 'P':
                     player_sprite = Player((x,y),self.display_surface,self.create_jump_particle)
                     self.player.add(player_sprite)
+                if cell == 'M':
+                    tile = MovingBlock((x, y), tile_size)
+                    self.tiles.add(tile)
 
     def scroll_x(self):
         player = self.player.sprite
@@ -106,6 +109,14 @@ class Level:
             player.on_ground = False
         if player.on_ceiling and player.direction.y > 0:
             player.on_ceiling = False
+
+    def create_block(self ,pos):
+        gridx = pos[0] //tile_size
+        gridy = pos[1] //tile_size
+        block_pos = (gridx * tile_size ,gridy * tile_size)
+
+        new_block = DissapearBlock(block_pos, tile_size)
+        self.tiles.add(new_block)
 
     def run(self):
 

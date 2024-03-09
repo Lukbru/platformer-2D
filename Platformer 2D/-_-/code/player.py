@@ -1,5 +1,6 @@
 import pygame
 from support import import_folder
+from Settings import screen_height
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,pos,surface,create_jump_particle):
@@ -86,10 +87,10 @@ class Player(pygame.sprite.Sprite):
     def get_input(self):
      keys = pygame.key.get_pressed()
 
-     if keys[pygame.K_RIGHT]:
+     if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         self.direction.x = 1
         self.facing_right = True
-     elif keys[pygame.K_LEFT]:
+     elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
         self.direction.x = -1
         self.facing_right = False
      else:
@@ -113,6 +114,9 @@ class Player(pygame.sprite.Sprite):
     def apply_gravity(self):
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
+        if self.rect.y > screen_height:
+            self.rect.y = -64
+            self.direction.y = -5
 
     def jump(self):
         self.direction.y = self.jump_speed
