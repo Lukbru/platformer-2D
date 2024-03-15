@@ -28,7 +28,13 @@ class MovingBlock(pygame.sprite.Sprite):
      self.image = pygame.image.load('../graphics/block/dis_tile.png').convert_alpha()
      self.rect = self.image.get_rect(topleft = pos)
      self.direction = 1
+     self.update_time = pygame.time.get_ticks()
 
     def update(self,x_shift):
         self.rect.x += x_shift
+        current_time = pygame.time.get_ticks()
+        if current_time - self.update_time >= 3000:
+            self.direction *=-1
+            self.update_time = current_time
+
         self.rect.x += self.direction
